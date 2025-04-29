@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getOrdersByPhone } from '../utils/api';
 import Loading from '../components/common/Loading';
+import { useNotification } from '../contexts/NotificationContext';
 
 const OrderHistory = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -8,12 +9,14 @@ const OrderHistory = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [searched, setSearched] = useState(false);
+    const notify = useNotification();
 
     const handleSearch = async (e) => {
         e.preventDefault();
 
         if (!phoneNumber.trim()) {
             setError('Please enter a phone number');
+            notify.warning('Please enter a phone number');
             return;
         }
 
@@ -25,12 +28,20 @@ const OrderHistory = () => {
             setOrders(response.data);
             setSearched(true);
 
+            if (response.data.length === 0) {
+                notify.info('No orders found for this phone number');
+            } else {
+                notify.success(`Found ${response.data.length} order(s)`);
+            }
+
         } catch (error) {
             if (error.response && error.response.status === 404) {
                 setOrders([]);
                 setError('No orders found for this phone number');
+                notify.info('No orders found for this phone number');
             } else {
                 setError('Failed to fetch order history. Please try again.');
+                notify.error('Failed to fetch order history. Please try again.');
             }
         } finally {
             setLoading(false);

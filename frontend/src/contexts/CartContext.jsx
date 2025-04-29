@@ -1,4 +1,5 @@
 import { createContext, useContext, useReducer, useEffect } from 'react';
+import { useNotification } from './NotificationContext';
 
 // Initial state for cart
 const initialState = {
@@ -14,7 +15,7 @@ const cartReducer = (state, action) => {
     switch (action.type) {
         case 'ADD_ITEM': {
             const existingItemIndex = state.items.findIndex(
-                item => item.id === action.payload.id
+                item => item.id === action.payload.id || item._id === action.payload._id
             );
 
             if (existingItemIndex > -1) {
@@ -29,7 +30,7 @@ const cartReducer = (state, action) => {
                 };
             } else {
                 // New item, add to cart
-                const newItem = { ...action.payload, quantity: 1 };
+                const newItem = { ...action.payload, quantity: 1, id: action.payload._id || action.payload.id };
                 const updatedItems = [...state.items, newItem];
 
                 return {
@@ -69,6 +70,9 @@ const cartReducer = (state, action) => {
         case 'CLEAR_CART':
             return initialState;
 
+        case 'REPLACE_CART':
+            return action.payload;
+
         default:
             return state;
     }
@@ -85,6 +89,7 @@ const calculateTotal = (items) => {
 // CartProvider component
 export const CartProvider = ({ children }) => {
     const [state, dispatch] = useReducer(cartReducer, initialState);
+    const notify = useNotification();
 
     // Save cart to localStorage whenever it changes
     useEffect(() => {
@@ -116,25 +121,44 @@ export const CartProvider = ({ children }) => {
     // Add an item to cart
     const addToCart = (item) => {
         dispatch({ type: 'ADD_ITEM', payload: item });
+
+        // Show notification
+        const isNew = !state.items.some(i => i.id === item.id || i._id === item._id);
+        if (isNew) {
+            notify.success(`${item.name} added to cart`);
+        } else {
+            notify.info(`${item.name} quantity increased`);
+        }
     };
 
     // Remove an item from cart
     const removeFromCart = (id) => {
-        dispatch({ type: 'REMOVE_ITEM', payload: id });
+        const itemToRemove = state.items.find(item => item.id === id || item._id === id);
+        if (itemToRemove) {
+            dispatch({ type: 'REMOVE_ITEM', payload: id });
+            notify.info(`${itemToRemove.name} removed from cart`);
+        }
     };
 
     // Update item quantity in cart
     const updateQuantity = (id, quantity) => {
         if (quantity < 1) return;
-        dispatch({
-            type: 'UPDATE_QUANTITY',
-            payload: { id, quantity }
-        });
+
+        const itemToUpdate = state.items.find(item => item.id === id || item._id === id);
+        if (itemToUpdate) {
+            dispatch({
+                type: 'UPDATE_QUANTITY',
+                payload: { id, quantity }
+            });
+
+            notify.info(`${itemToUpdate.name} quantity updated`);
+        }
     };
 
     // Clear the cart
     const clearCart = () => {
         dispatch({ type: 'CLEAR_CART' });
+        notify.info('Cart cleared');
     };
 
     return (

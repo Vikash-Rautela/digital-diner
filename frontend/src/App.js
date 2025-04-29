@@ -1,10 +1,9 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 // Context Providers
 import { CartProvider } from "./contexts/CartContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 
 // Layout Components
 import Header from "./components/layout/Header";
@@ -24,23 +23,24 @@ import "./App.css";
 function App() {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <div className="app">
-          <Header />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/order" element={<OrderForm />} />
-              <Route path="/confirmation" element={<OrderConfirmation />} />
-              <Route path="/order-history" element={<OrderHistory />} />
-            </Routes>
-          </main>
-          <Footer />
-          <ToastContainer position="bottom-right" />
-        </div>
-      </CartProvider>
+      <NotificationProvider>
+        <CartProvider>
+          <div className="app">
+            <Header />
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/menu" element={<Menu />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/order" element={<OrderForm />} />
+                <Route path="/confirmation" element={<OrderConfirmation />} />
+                <Route path="/order-history" element={<OrderHistory />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </CartProvider>
+      </NotificationProvider>
     </BrowserRouter>
   );
 }

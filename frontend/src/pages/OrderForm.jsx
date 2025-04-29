@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useCart } from '../contexts/CartContext';
+import { useNotification } from '../contexts/NotificationContext';
 import { createOrder } from '../utils/api';
 import useFormValidation from '../hooks/useFormValidation';
+import Loading from '../components/common/Loading';
 
 const OrderForm = () => {
     const { cart, clearCart } = useCart();
+    const notify = useNotification();
     const navigate = useNavigate();
 
     // Form validation function
@@ -44,14 +46,17 @@ const OrderForm = () => {
     useEffect(() => {
         if (cart.items.length === 0) {
             navigate('/menu');
-            toast.info('Your cart is empty. Add items before placing an order.');
+            notify.info('Your cart is empty. Add items before placing an order.');
         }
-    }, [cart.items.length, navigate]);
+    }, [cart.items.length, navigate, notify]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
+        if (!validateForm()) {
+            notify.error('Please fix the errors in the form before submitting');
+            return;
+        }
 
         try {
             setIsSubmitting(true);
@@ -80,14 +85,14 @@ const OrderForm = () => {
             resetForm();
 
             // Show success message
-            toast.success('Order placed successfully!');
+            notify.success('Order placed successfully!');
 
             // Redirect to confirmation page
             navigate('/confirmation');
 
         } catch (error) {
             console.error('Error submitting order:', error);
-            toast.error('Failed to place order. Please try again.');
+            notify.error('Failed to place order. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -160,7 +165,12 @@ const OrderForm = () => {
                             className="btn btn-primary"
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? 'Placing Order...' : 'Place Order'}
+                            {isSubmitting ? (
+                                <>
+                                    <span className="submit-text">Placing Order...</span>
+                                    <Loading size="small" text="" />
+                                </>
+                            ) : 'Place Order'}
                         </button>
                     </div>
                 </form>
