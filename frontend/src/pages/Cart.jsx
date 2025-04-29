@@ -6,6 +6,11 @@ import { useCart } from '../contexts/CartContext';
 const Cart = () => {
     const { cart, clearCart } = useCart();
 
+    const formatPrice = (price) => {
+        const numPrice = parseFloat(price);
+        return isNaN(numPrice) ? '0.00' : numPrice.toFixed(2);
+    };
+
     if (cart.items.length === 0) {
         return (
             <div className="page cart-page empty-cart">
@@ -34,7 +39,7 @@ const Cart = () => {
                 <div className="cart-summary">
                     <div className="cart-total">
                         <span>Total:</span>
-                        <span className="total-amount">${cart.total.toFixed(2)}</span>
+                        <span className="total-amount">${formatPrice(cart.total)}</span>
                     </div>
 
                     <div className="cart-actions">

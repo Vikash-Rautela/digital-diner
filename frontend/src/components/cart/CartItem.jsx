@@ -11,11 +11,16 @@ const CartItem = ({ item }) => {
         }
     };
 
+    const formatPrice = (price) => {
+        const numPrice = parseFloat(price);
+        return isNaN(numPrice) ? '0.00' : numPrice.toFixed(2);
+    };
+
     return (
         <div className="cart-item">
             <div className="cart-item-info">
                 <h4>{item.name}</h4>
-                <p className="cart-item-price">${item.price.toFixed(2)}</p>
+                <p className="cart-item-price">${formatPrice(item.price)}</p>
             </div>
 
             <div className="cart-item-actions">
@@ -53,7 +58,7 @@ const CartItem = ({ item }) => {
             </div>
 
             <div className="cart-item-total">
-                ${(item.price * item.quantity).toFixed(2)}
+                ${formatPrice(item.price * item.quantity)}
             </div>
         </div>
     );

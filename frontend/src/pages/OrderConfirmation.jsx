@@ -6,11 +6,9 @@ const OrderConfirmation = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Get order details from localStorage
         const orderData = localStorage.getItem('lastOrder');
 
         if (!orderData) {
-            // If no order data, redirect to menu
             navigate('/menu');
             return;
         }
@@ -23,7 +21,6 @@ const OrderConfirmation = () => {
         }
     }, [navigate]);
 
-    // Format pickup time
     const formatPickupTime = (dateString) => {
         if (!dateString) return 'Calculating...';
 
@@ -31,12 +28,16 @@ const OrderConfirmation = () => {
         return pickupTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
-    // Format date
     const formatDate = (dateString) => {
         if (!dateString) return '';
 
         const date = new Date(dateString);
         return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    const formatPrice = (price) => {
+        const numPrice = parseFloat(price);
+        return isNaN(numPrice) ? '0.00' : numPrice.toFixed(2);
     };
 
     if (!order) {
@@ -72,13 +73,13 @@ const OrderConfirmation = () => {
                             {order.items.map((item, index) => (
                                 <div className="order-item" key={index}>
                                     <span>{item.name} x {item.quantity}</span>
-                                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                                    <span>${formatPrice(item.price * item.quantity)}</span>
                                 </div>
                             ))}
                         </div>
                         <div className="order-total">
                             <span>Total:</span>
-                            <span>${order.totalAmount.toFixed(2)}</span>
+                            <span>${formatPrice(order.totalAmount)}</span>
                         </div>
                     </div>
                 </div>

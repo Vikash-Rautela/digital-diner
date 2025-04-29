@@ -52,6 +52,11 @@ const OrderHistory = () => {
         return new Date(dateString).toLocaleString();
     };
 
+    const formatPrice = (price) => {
+        const numPrice = parseFloat(price);
+        return isNaN(numPrice) ? '0.00' : numPrice.toFixed(2);
+    };
+
     return (
         <div className="page order-history-page">
             <div className="container">
@@ -107,14 +112,14 @@ const OrderHistory = () => {
                                     {order.OrderItems.map(item => (
                                         <div className="order-item" key={item.id}>
                                             <span>{item.name} x {item.quantity}</span>
-                                            <span>${(item.price * item.quantity).toFixed(2)}</span>
+                                            <span>${formatPrice(item.price * item.quantity)}</span>
                                         </div>
                                     ))}
                                 </div>
 
                                 <div className="order-card-footer">
                                     <span>Total:</span>
-                                    <span className="order-total">${order.totalAmount.toFixed(2)}</span>
+                                    <span className="order-total">${formatPrice(order.totalAmount)}</span>
                                 </div>
 
                                 {order.pickupTime && (
