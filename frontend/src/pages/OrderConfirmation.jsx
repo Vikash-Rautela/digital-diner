@@ -23,6 +23,22 @@ const OrderConfirmation = () => {
         }
     }, [navigate]);
 
+    // Format pickup time
+    const formatPickupTime = (dateString) => {
+        if (!dateString) return 'Calculating...';
+
+        const pickupTime = new Date(dateString);
+        return pickupTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    // Format date
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+
+        const date = new Date(dateString);
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
     if (!order) {
         return <div className="loading">Loading order details...</div>;
     }
@@ -43,8 +59,11 @@ const OrderConfirmation = () => {
                         <p><strong>Order ID:</strong> {order.id}</p>
                         <p><strong>Customer:</strong> {order.customerName}</p>
                         <p><strong>Phone:</strong> {order.phoneNumber}</p>
-                        <p><strong>Order Date:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+                        <p><strong>Order Date:</strong> {formatDate(order.createdAt)}</p>
                         <p><strong>Status:</strong> <span className="status">{order.status}</span></p>
+                        <p className="pickup-time">
+                            <strong>Estimated Pickup Time:</strong> {formatPickupTime(order.pickupTime)}
+                        </p>
                     </div>
 
                     <div className="confirmation-section">
@@ -66,7 +85,7 @@ const OrderConfirmation = () => {
 
                 <div className="confirmation-footer">
                     <p>
-                        Thank you for your order. Your food will be ready for pickup shortly.
+                        Thank you for your order. Your food will be ready for pickup at <strong>{formatPickupTime(order.pickupTime)}</strong>.
                         Please keep your phone handy as we may contact you regarding your order.
                     </p>
 

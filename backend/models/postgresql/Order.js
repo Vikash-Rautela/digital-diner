@@ -36,6 +36,13 @@ const Order = sequelize.define(
     },
     pickupTime: {
       type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: () => {
+        // Set default pickup time to 30 minutes from now
+        const date = new Date();
+        date.setMinutes(date.getMinutes() + 30);
+        return date;
+      },
     },
   },
   {

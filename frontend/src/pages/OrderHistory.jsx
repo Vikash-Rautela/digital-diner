@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getOrdersByPhone } from '../utils/api';
+import Loading from '../components/common/Loading';
 
 const OrderHistory = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -69,7 +70,7 @@ const OrderHistory = () => {
                     </button>
                 </form>
 
-                {loading && <div className="loading">Loading order history...</div>}
+                {loading && <Loading text="Searching for your orders..." />}
 
                 {searched && !loading && orders.length === 0 && !error && (
                     <div className="no-orders">
@@ -104,6 +105,12 @@ const OrderHistory = () => {
                                     <span>Total:</span>
                                     <span className="order-total">${order.totalAmount.toFixed(2)}</span>
                                 </div>
+
+                                {order.pickupTime && (
+                                    <div className="pickup-time-info">
+                                        <strong>Pickup Time:</strong> {new Date(order.pickupTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

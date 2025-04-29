@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MenuItem from './MenuItem';
+import Loading from '../common/Loading';
 import { getMenuItems } from '../../utils/api';
 
 const MenuList = () => {
@@ -31,7 +32,7 @@ const MenuList = () => {
         ? menuItems
         : menuItems.filter(item => item.category === activeCategory);
 
-    if (loading) return <div className="loading">Loading menu items...</div>;
+    if (loading) return <Loading text="Loading menu items..." size="large" />;
 
     if (error) return <div className="error">{error}</div>;
 
